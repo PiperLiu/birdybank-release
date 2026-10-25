@@ -1,0 +1,34 @@
+name: Upload verified release assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Existing release version, without a v prefix
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-assets-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    if: github.repository == 'PiperLiu/birdybank-release'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test release asset safety checks
+        run: python3 -m unittest discover -s scripts -p 'test_*.py'
+      - name: Verify R2 archives and upload missing GitHub assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: python3 scripts/upload-release-assets.py "$RELEASE_VERSION"

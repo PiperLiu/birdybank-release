@@ -72,6 +72,17 @@ If GitHub is inconvenient in your region, you may also use the Gitee Issues mirr
 
 - Gitee Issues: https://gitee.com/piperliu/birdybank-release/issues
 
+## Release asset uploads / 发布附件上传
+
+If a local upload times out, the manual **Upload verified release assets** workflow can copy the three public R2 ZIPs into an existing GitHub Release. It checks the SHA-256 entries in `v0/<version>.md` and the existing release notes, skips matching uploaded assets, and refuses to overwrite incomplete or different files. It does not build installers, create tags/releases, or change release visibility. No R2 credentials are needed.
+
+本地上传超时时，可手动运行 **Upload verified release assets**，让 GitHub runner 从公开 R2 地址拉取三个 ZIP 并上传到已有 Release。流程核对 `v0/<version>.md` 中的 SHA-256 和已有发布说明，跳过摘要正确的附件，拒绝覆盖不完整或不同的文件；不构建安装包、不创建标签或 Release，也不改变发布状态，无需 R2 凭据。
+
+```bash
+cd birdybank-release
+gh workflow run upload-release-assets.yml --ref main -f version=1.3.2
+```
+
 ## License
 ## 许可协议
 
